@@ -2,10 +2,28 @@ import requests
 import time
 import winsound
 from datetime import datetime
+import os
+from dotenv import load_dotenv
+
+# Cargar variables de entorno desde .env
+load_dotenv()
+
+def get_env_value(key, default, type_cast=str):
+    """Obtiene un valor del archivo .env y lo convierte al tipo especificado."""
+    value = os.getenv(key, default)
+    # Eliminar cualquier comentario después del valor
+    if isinstance(value, str):
+        value = value.split('#')[0].strip()
+    try:
+        return type_cast(value)
+    except (ValueError, TypeError):
+        print(f"Warning: Invalid value for {key}, using default: {default}")
+        return type_cast(default)
 
 def search_crypto_by_name(search_term):
     try:
-        url = "https://api.coingecko.com/api/v3/coins/list"
+        api_url = get_env_value('API_URL', 'https://api.coingecko.com/api/v3')
+        url = f"{api_url}/coins/list"
         response = requests.get(url)
         all_coins = response.json()
         
@@ -25,7 +43,8 @@ def search_crypto_by_name(search_term):
 
 def get_crypto_price(crypto_id):
     try:
-        url = f"https://api.coingecko.com/api/v3/simple/price?ids={crypto_id}&vs_currencies=usd"
+        api_url = get_env_value('API_URL', 'https://api.coingecko.com/api/v3')
+        url = f"{api_url}/simple/price?ids={crypto_id}&vs_currencies=usd"
         response = requests.get(url)
         data = response.json()
         return data[crypto_id]['usd']
@@ -63,7 +82,8 @@ def monitor_crypto(crypto_id, threshold_percentage):
                 play_alert()
         
         previous_price = current_price
-        time.sleep(30)
+        update_interval = get_env_value('UPDATE_INTERVAL', '30', int)
+        time.sleep(update_interval)
 
 def display_search_results(matches):
     if not matches:
@@ -82,9 +102,9 @@ if __name__ == "__main__":
     option = input("\nSelect an option (1/2): ")
     
     if option == "1":
-        # Configuration
-        CRYPTO_ID = "bitcoin"  # You can change this to another cryptocurrency (e.g., "ethereum", "dogecoin")
-        THRESHOLD_PERCENTAGE = 0.05  # Alert if price changes more than 5%
+        # Configuration from environment variables with defaults
+        CRYPTO_ID = get_env_value('CRYPTO_ID', 'bitcoin')
+        THRESHOLD_PERCENTAGE = get_env_value('THRESHOLD_PERCENTAGE', '0.05', float)
         
         try:
             monitor_crypto(CRYPTO_ID, THRESHOLD_PERCENTAGE)
@@ -98,7 +118,7 @@ if __name__ == "__main__":
         
         if matches:
             print("\nTo monitor one of these cryptocurrencies, copy its ID and use it in the script.")
-            print("You can modify the CRYPTO_ID variable in the script with the desired ID.")
+            print("You can modify the CRYPTO_ID variable in the .env file with the desired ID.")
     
     else:
         print("Invalid option") 

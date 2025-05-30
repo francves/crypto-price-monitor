@@ -10,11 +10,13 @@ A Python script that monitors cryptocurrency prices in real-time and alerts you 
 - Sound alerts when price changes exceed the threshold
 - Price updates every 30 seconds
 - Support for any cryptocurrency available on CoinGecko
+- Environment-based configuration
 
 ## Requirements
 
 - Python 3.x
 - requests library
+- python-dotenv library
 
 ## Installation
 
@@ -28,6 +30,28 @@ cd crypto-price-monitor
 ```bash
 pip install -r requirements.txt
 ```
+
+3. Configure your environment:
+   - Copy `.env.example` to `.env`
+   - Modify the values in `.env` according to your needs
+
+## Configuration
+
+The script can be configured using environment variables in the `.env` file:
+
+```env
+# Cryptocurrency Configuration
+CRYPTO_ID=bitcoin              # ID of the cryptocurrency to monitor
+THRESHOLD_PERCENTAGE=0.05      # Alert threshold (5%)
+
+# API Configuration
+API_URL=https://api.coingecko.com/api/v3
+
+# Monitoring Configuration
+UPDATE_INTERVAL=30            # Update interval in seconds
+```
+
+You can find the correct cryptocurrency ID using the search option in the script.
 
 ## Usage
 
@@ -55,24 +79,18 @@ When you select option 2, you can:
 - View a list of matching cryptocurrencies with their IDs
 - Use the found ID to monitor a specific cryptocurrency
 
-## Configuration
-
-You can modify these variables in the script:
-- `CRYPTO_ID`: The ID of the cryptocurrency to monitor (e.g., "bitcoin", "ethereum", "dogecoin")
-- `THRESHOLD_PERCENTAGE`: The percentage change that triggers an alert (default: 5%)
-
 ## Examples
 
-1. To monitor Bitcoin:
-```python
-CRYPTO_ID = "bitcoin"
-THRESHOLD_PERCENTAGE = 0.05  # 5% change
+1. To monitor Bitcoin with a 5% threshold:
+```env
+CRYPTO_ID=bitcoin
+THRESHOLD_PERCENTAGE=0.05
 ```
 
-2. To monitor Ethereum:
-```python
-CRYPTO_ID = "ethereum"
-THRESHOLD_PERCENTAGE = 0.05  # 5% change
+2. To monitor Ethereum with a 2% threshold:
+```env
+CRYPTO_ID=ethereum
+THRESHOLD_PERCENTAGE=0.02
 ```
 
 ## License
